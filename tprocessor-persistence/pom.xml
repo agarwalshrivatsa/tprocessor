@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.pmspod</groupId>
-        <artifactId>processor</artifactId>
+        <artifactId>tprocessor</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>processor-core</artifactId>
+    <artifactId>tprocessor-persistence</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

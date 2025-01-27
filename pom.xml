@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.pmspod</groupId>
-	<artifactId>processor</artifactId>
+	<artifactId>tprocessor</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>processor</name>
@@ -22,9 +22,9 @@
 		<developer/>
 	</developers>
     <modules>
-        <module>processor-web</module>
-		<module>processor-persistence</module>
-        <module>processor-core</module>
+        <module>tprocessor-web</module>
+		<module>tprocessor-persistence</module>
+        <module>tprocessor-core</module>
     </modules>
     <scm>
 		<connection/>

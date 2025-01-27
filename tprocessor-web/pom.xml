@@ -5,16 +5,24 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.pmspod</groupId>
-        <artifactId>processor</artifactId>
+        <artifactId>tprocessor</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>processor-persistence</artifactId>
+    <artifactId>tprocessor-web</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.pmspod</groupId>
+            <artifactId>tprocessor-core</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 </project>
