@@ -1,0 +1,23 @@
+{
+  "tradeList": [
+    {
+      "extOrderId": "ORD-123",
+      "tradeDate": "20220101",
+      "ticker": "AAPL",
+      "orderType": "BUY",
+      "quantity": "100",
+      "price": "150.00",
+      "currency": "USD"
+    },
+    {
+      "extOrderId": "ORD-456",
+      "tradeDate": "2022-01-02",
+      "ticker": "GOOG",
+      "orderType": "SELL",
+      "quantity": "50",
+      "price": "2000.00",
+      "currency": "USD"
+    }
+  ],
+  "username": "johnDoe"
+}
