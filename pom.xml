@@ -11,7 +11,7 @@
 	<groupId>com.pmspod</groupId>
 	<artifactId>tprocessor</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <name>tprocessor</name>
 	<description>Trade Processor</description>
 	<properties>
