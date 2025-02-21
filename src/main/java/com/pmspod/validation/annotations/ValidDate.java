@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidDate {
 
-    String message() default "Invalid date format";
+    String message() default "Trade date must be valid and not in the future";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 

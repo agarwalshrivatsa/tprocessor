@@ -16,7 +16,17 @@ public class DateValidator implements ConstraintValidator<ValidDate, String> {
 
         if(s != null) {
             try {
-                LocalDate.parse(s, DATE_FORMATTER);
+                LocalDate date= LocalDate.parse(s, DATE_FORMATTER);
+                LocalDate today = LocalDate.now();
+
+                // Check if date is in the future
+                if (date.isAfter(today)) {
+                    constraintValidatorContext.disableDefaultConstraintViolation();
+                    constraintValidatorContext.buildConstraintViolationWithTemplate(
+                            "Trade date cannot be in the future"
+                    ).addConstraintViolation();
+                    return false;
+                }
             } catch (Exception e) {
                 return false;
             }
