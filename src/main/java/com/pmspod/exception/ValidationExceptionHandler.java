@@ -34,7 +34,7 @@ public class ValidationExceptionHandler {
         }
 
         // Map to track trades with validation errors
-        Map<String, String> tradeErrors = new HashMap<>();
+        Map<String, List<String>> tradeErrors = new HashMap<>();
 
         // Process all validation errors
         ex.getBindingResult().getAllErrors().forEach(error -> {
@@ -54,17 +54,19 @@ public class ValidationExceptionHandler {
                         TradeDto tradeDto = request.getTradeList().get(tradeIndex);
                         String extOrderId = tradeDto.getExtOrderId();
 
-                        // Only store the first error message for this trade
+                        // Collect all errors for this trade
                         if (!tradeErrors.containsKey(extOrderId)) {
-                            tradeErrors.put(extOrderId, errorMessage);
+                            tradeErrors.put(extOrderId, new ArrayList<>());
                         }
+                        tradeErrors.get(extOrderId).add(errorMessage);
                     }
                 } else if (fieldName.equals("tradeList")) {
                     // Handle errors for the entire tradeList
                     for (TradeDto tradeDto : request.getTradeList()) {
                         if (!tradeErrors.containsKey(tradeDto.getExtOrderId())) {
-                            tradeErrors.put(tradeDto.getExtOrderId(), errorMessage);
+                            tradeErrors.put(tradeDto.getExtOrderId(), new ArrayList<>());
                         }
+                        tradeErrors.get(tradeDto.getExtOrderId()).add(errorMessage);
                     }
                 }
             }
@@ -90,17 +92,18 @@ public class ValidationExceptionHandler {
                 TradeResult result = new TradeResult();
                 result.setTrade(tradeDto);
                 result.setResult(FAILED);
-                result.getErrors().add(tradeErrors.get(tradeDto.getExtOrderId()));
+                result.getErrors().addAll(tradeErrors.get(tradeDto.getExtOrderId()));
                 resultList.add(result);
             }
         }
+
         // After processing all trades and before returning the response
         boolean anySuccess = resultList.stream()
                 .anyMatch(result -> "Success".equals(result.getResult()));
 
         HttpStatus responseStatus = anySuccess ? HttpStatus.MULTI_STATUS : HttpStatus.BAD_REQUEST;
 
-        // Return combined results with HTTP 207 Multi-Status
+        // Return combined results with the appropriate status code
         return ResponseEntity.status(responseStatus)
                 .body(new TradeUploadResponse(resultList));
     }
