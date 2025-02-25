@@ -71,7 +71,7 @@ public class TradeServiceImpl implements TradeService {
     }
 
     private List<TradeResult> validateAndPersist(List<TradeDto> tradeList) {
-        Map<String, String> failedTrades = getFailedTradeMap(tradeList);
+        Map<String, List<String>> failedTrades = getFailedTradeMap(tradeList);
 
         List<TradeResult> tradeResultList = persistTrades(
                 tradeList.stream()
@@ -84,7 +84,7 @@ public class TradeServiceImpl implements TradeService {
                 TradeResult result = new TradeResult();
                 result.setTrade(trade);
                 result.setResult(FAILED);
-                result.getErrors().add(failedTrades.get(trade.getExtOrderId()));
+                result.getErrors().addAll(failedTrades.get(trade.getExtOrderId()));
                 tradeResultList.add(result);
             }
         });
@@ -92,8 +92,8 @@ public class TradeServiceImpl implements TradeService {
         return tradeResultList;
     }
 
-    public Map<String, String> getFailedTradeMap(List<TradeDto> tradeList) {
-        Map<String, String> failedTrades = getValidTradeDtos(tradeList);
+    public Map<String, List<String>> getFailedTradeMap(List<TradeDto> tradeList) {
+        Map<String, List<String>> failedTrades = getValidTradeDtos(tradeList);
 
         // duplicate check
         tradeList.stream()
@@ -105,32 +105,36 @@ public class TradeServiceImpl implements TradeService {
                     return false;
                 })
                 .forEach(tradeDto -> {
-                    failedTrades.put(tradeDto.getExtOrderId(), "Duplicate External Order ID");
+                    List<String> errors = new ArrayList<>();
+                    errors.add("Duplicate External Order ID");
+                    failedTrades.put(tradeDto.getExtOrderId(), errors);
                 });
 
         return failedTrades;
     }
 
-    private Map<String, String> getValidTradeDtos(List<TradeDto> tradeList) {
-        Map<String, String> failedTrades = new HashMap<>();
+    private Map<String, List<String>> getValidTradeDtos(List<TradeDto> tradeList) {
+        Map<String, List<String>> failedTrades = new HashMap<>();
         // Validate the trades
         tradeList.forEach(tradeDto -> {
-            String result = validateTradeDto(tradeDto);
-            if (!result.equals(SUCCESS)) {
-                log.error("Invalid trade received: {}, error: {}", tradeDto, result);
-                failedTrades.put(tradeDto.getExtOrderId(), result);
+            List<String> validationErrors = validateTradeDto(tradeDto);
+            if (!validationErrors.isEmpty()) {
+                log.error("Invalid trade received: {}, errors: {}", tradeDto, validationErrors);
+                failedTrades.put(tradeDto.getExtOrderId(), validationErrors);
             }
         });
         return failedTrades;
     }
 
-    private String validateTradeDto(TradeDto tradeDto) {
+    private List<String> validateTradeDto(TradeDto tradeDto) {
+        List<String> errors = new ArrayList<>();
         Set<ConstraintViolation<TradeDto>> violationSet = validator.validate(tradeDto);
 
         if (violationSet.isEmpty()) {
-            return SUCCESS;
+            return errors;
         } else {
-            return violationSet.iterator().next().getMessage();
+            violationSet.forEach(violation -> errors.add(violation.getMessage()));
+            return errors;
         }
     }
 
