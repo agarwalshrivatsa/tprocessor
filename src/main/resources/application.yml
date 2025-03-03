@@ -1,19 +1,22 @@
 server:
   port: 8081
+
 spring:
   application.name: tprocessor
+  
+  config:
+      import: 
+        - optional:file:../.env[.properties]
+        - optional:file:.env[.properties]
+
   datasource:
-    url: jdbc:h2:mem:testdb
-    driverClassName: org.h2.Driver
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
+    url: jdbc:mysql://localhost:3306/pmsdb?useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD} 
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
     show-sql: true
-
-    autoconfigure.exclude: 'org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration'
+    database-platform: org.hibernate.dialect.MySQLDialect

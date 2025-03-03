@@ -1,7 +1,7 @@
-package com.pmspod.mapper;
+package com.fdm.pmstprocessor.mapper;
 
-import com.pmspod.dto.TradeDto;
-import com.pmspod.entity.Trade;
+import com.fdm.pmscommon.dto.TradeDto;
+import com.fdm.pmscommon.entities.Trade;
 
 public class TradeMapper {
 

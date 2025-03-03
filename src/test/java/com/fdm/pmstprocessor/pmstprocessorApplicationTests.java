@@ -1,13 +1,11 @@
-package com.pmspod.processor;
+package com.fdm.pmstprocessor;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ProcessorApplicationTests {
-
-	@Test
+public class pmstprocessorApplicationTests {
+    @Test
 	void contextLoads() {
 	}
-
 }
