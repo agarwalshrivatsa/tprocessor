@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,8 +26,6 @@ import com.fdm.pmscommon.repositories.TradeRepository;
 import com.fdm.pmstprocessor.mapper.TradeMapper;
 import com.fdm.pmstprocessor.service.TradeService;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -79,7 +76,7 @@ public class TradeServiceImpl implements TradeService {
         if(!successTrades.isEmpty()){
             log.info("sending update to Position calculator: {}", successTrades);
             try {
-                restTemplate.postForObject("http://localhost:8082/api/trades/upload", new TradeUploadRequestToPc(successTrades), TradeUploadRequestToPc.class);
+                restTemplate.postForObject("http://pcalculator:8082/api/trades/upload", new TradeUploadRequestToPc(successTrades), TradeUploadRequestToPc.class);
             } catch(Exception e){
                 log.error("Error in sending update to Position Calculator!");
             }
