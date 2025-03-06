@@ -160,13 +160,13 @@ public class TradeServiceImpl implements TradeService {
         for (TradeDto tradeDto : successTradeList) {
             Trade trade = TradeMapper.mapToTrade(tradeDto, new Trade());
             trade.setStatus("PENDING");
-            trade.setPositionId(generatePositionId(account.getId(), trade.getTicker()));
+            // trade.setPositionId(generatePositionId(account.getId(), trade.getTicker()));
             trade.setAccount(account);
             try{
                 tradeRepository.save(trade);
 
                 TradeResult result = new TradeResult();
-                tradeDto.setPositionId(generatePositionId(account.getId(), trade.getTicker()));
+                // tradeDto.setPositionId(generatePositionId(account.getId(), trade.getTicker()));
                 tradeDto.setAccountId(account.getId());
 
                 result.setTrade(tradeDto);
@@ -191,10 +191,5 @@ public class TradeServiceImpl implements TradeService {
             result.setMessage("Internal Server Error");});
         }
         return resultList;
-    }
-
-    private UUID generatePositionId(UUID accountId, String ticker) {
-        String compositeKey = accountId.toString() + ":" + ticker;
-        return UUID.nameUUIDFromBytes(compositeKey.getBytes(StandardCharsets.UTF_8));
     }
 }
