@@ -1,6 +1,6 @@
 package com.fdm.pmstprocessor.mapper;
 
-import com.fdm.pmscommon.dto.TradeDto;
+import com.fdm.pmscommon.dto.general.TradeDto;
 import com.fdm.pmscommon.entities.Trade;
 
 public class TradeMapper {
@@ -18,9 +18,6 @@ public class TradeMapper {
     }
 
     public static TradeDto mapToTradeDto(Trade trade) {
-
-
-
         return null;
     }
 }

@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.fdm.pmscommon.dto.TradeDto;
-import com.fdm.pmscommon.dto.TradeResult;
+import com.fdm.pmscommon.dto.general.TradeDto;
+import com.fdm.pmscommon.dto.general.TradeResult;
 import com.fdm.pmscommon.dto.outgoing.TradeUploadRequestToPc;
 import com.fdm.pmscommon.dto.outgoing.TradeUploadResponse;
 import com.fdm.pmscommon.entities.Account;
@@ -160,13 +160,11 @@ public class TradeServiceImpl implements TradeService {
         for (TradeDto tradeDto : successTradeList) {
             Trade trade = TradeMapper.mapToTrade(tradeDto, new Trade());
             trade.setStatus("PENDING");
-            // trade.setPositionId(generatePositionId(account.getId(), trade.getTicker()));
             trade.setAccount(account);
             try{
                 tradeRepository.save(trade);
 
                 TradeResult result = new TradeResult();
-                // tradeDto.setPositionId(generatePositionId(account.getId(), trade.getTicker()));
                 tradeDto.setAccountId(account.getId());
 
                 result.setTrade(tradeDto);
@@ -191,5 +189,27 @@ public class TradeServiceImpl implements TradeService {
             result.setMessage("Internal Server Error");});
         }
         return resultList;
+    }
+
+    @Override
+    public String updateTrades(List<TradeDto> processedTrades) {
+        processedTrades.stream().forEach(tradeDto -> {
+            if (tradeDto.getPositionId() == null) {
+                throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Position ID not given by Position Calculator"
+                );
+            }
+            Trade trade = TradeMapper.mapToTrade(tradeDto, new Trade());
+            trade.setAccount(accountRepository.findById(tradeDto.getAccountId())
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Account not found"
+                )));
+            trade.setPositionId(tradeDto.getPositionId());
+            trade.setStatus("COMPLETED");
+            tradeRepository.save(trade);
+        });
+        return "Success";
     }
 }
