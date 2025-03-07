@@ -27,9 +27,4 @@ public class TradeController {
         TradeUploadResponse response = tradeService.processTrades(request.getAccountId(), request.getTradeList());
         return response;
     }
-
-    @PostMapping("/response-from-pc")
-    public ResponseEntity<String> updateTrades(@RequestBody List<TradeDto> tradesDto) {
-        return ResponseEntity.ok(tradeService.updateTrades(tradesDto));
-    }
 }

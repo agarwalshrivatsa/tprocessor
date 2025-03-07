@@ -76,7 +76,16 @@ public class TradeServiceImpl implements TradeService {
         if(!successTrades.isEmpty()){
             log.info("sending update to Position calculator: {}", successTrades);
             try {
-                restTemplate.postForObject("http://pcalculator:8082/api/trades/upload", new TradeUploadRequestToPc(successTrades), TradeUploadRequestToPc.class);
+                TradeUploadRequestToPc response = restTemplate.postForObject(
+                    "http://pcalculator:8082/api/trades/upload", 
+                    new TradeUploadRequestToPc(successTrades), 
+                    TradeUploadRequestToPc.class
+                );
+
+                if (response != null && response.getTradeList() != null) {
+                    log.info("Received response from Position Calculator: {}", response.getTradeList());
+                    updateTrades(response.getTradeList());
+                }
             } catch(Exception e){
                 log.error("Error in sending update to Position Calculator!");
             }
