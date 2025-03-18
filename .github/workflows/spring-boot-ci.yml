@@ -2,7 +2,7 @@ name: Spring Boot CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, feat/simple_validation ]
   pull_request:
     branches: [ main, develop ]
 
