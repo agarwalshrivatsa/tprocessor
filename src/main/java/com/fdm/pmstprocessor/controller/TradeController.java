@@ -24,7 +24,7 @@ public class TradeController {
 
     @PostMapping("/upload")
     public TradeUploadResponse uploadTrades(@RequestBody TradeUploadRequest request) {
-        TradeUploadResponse response = tradeService.processTrades(request.getAccountId(), request.getTradeList());
+        TradeUploadResponse response = tradeService.processTrades(request.getTradeList());
         return response;
     }
 }

@@ -58,14 +58,9 @@ public class TradeServiceImpl implements TradeService {
 
     @Transactional
     @Override
-    public TradeUploadResponse processTrades(UUID accountId, List<TradeDto> tradeList) {
+    public TradeUploadResponse processTrades(List<TradeDto> tradeList) {
 
-        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "Account not found"
-        ));
-
-        List<TradeResult> tradeResultList = validateAndPersist(account, tradeList);
+        List<TradeResult> tradeResultList = validateAndPersist(tradeList);
 
         //TODO: send to position calculator
 
@@ -77,7 +72,7 @@ public class TradeServiceImpl implements TradeService {
             log.info("sending update to Position calculator: {}", successTrades);
             try {
                 TradeUploadRequestToPc response = restTemplate.postForObject(
-                    "http://pcalculator:8082/api/trades/upload", 
+                    "http://localhost:8082/api/trades/upload",
                     new TradeUploadRequestToPc(successTrades), 
                     TradeUploadRequestToPc.class
                 );
@@ -99,10 +94,10 @@ public class TradeServiceImpl implements TradeService {
 
     }
 
-    private List<TradeResult> validateAndPersist(Account account, List<TradeDto> tradeList){
+    private List<TradeResult> validateAndPersist(List<TradeDto> tradeList){
         Map<String, String> failedTrades = getFailedTradeMap(tradeList);
 
-        List<TradeResult> tradeResultList = persistTrades(account, tradeList.stream().filter(tradeDto -> !failedTrades.containsKey(tradeDto.getExtOrderId())).toList());
+        List<TradeResult> tradeResultList = persistTrades(tradeList.stream().filter(tradeDto -> !failedTrades.containsKey(tradeDto.getExtOrderId())).toList());
 
         tradeList.forEach(trade -> {
             if(failedTrades.containsKey(trade.getExtOrderId())){
@@ -131,6 +126,16 @@ public class TradeServiceImpl implements TradeService {
             return false;
         }).forEach(tradeDto -> {
             failedTrades.put(tradeDto.getExtOrderId(), "Duplicate External Order ID");
+        });
+
+        //account check
+        tradeList.stream().filter(tradeDto -> {
+            if(!failedTrades.containsKey(tradeDto.getExtOrderId()) && accountRepository.findById(tradeDto.getAccountId()).isEmpty()){
+                return true;
+            }
+            return false;
+        }).forEach(tradeDto -> {
+            failedTrades.put(tradeDto.getExtOrderId(), "Invalid Account ID");
         });
 
         return failedTrades;
@@ -164,17 +169,17 @@ public class TradeServiceImpl implements TradeService {
     }
 
 
-    private List<TradeResult> persistTrades(Account account, List<TradeDto> successTradeList){
+    private List<TradeResult> persistTrades(List<TradeDto> successTradeList){
         List<TradeResult> resultList = new ArrayList<>();
         for (TradeDto tradeDto : successTradeList) {
             Trade trade = TradeMapper.mapToTrade(tradeDto, new Trade());
             trade.setStatus("PENDING");
+            Account account = accountRepository.findById(tradeDto.getAccountId()).orElse(null);
             trade.setAccount(account);
             try{
                 tradeRepository.save(trade);
 
                 TradeResult result = new TradeResult();
-                tradeDto.setAccountId(account.getId());
 
                 result.setTrade(tradeDto);
                 result.setResult(SUCCESS);
